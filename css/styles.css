@@ -1,0 +1,42 @@
+
+
+body {
+  background-color: #22aa22;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: -50% -50%;
+}
+
+
+.boxButtons {
+  display: inline-block;
+  width: 300;
+}
+
+.basic {
+  margin: 20px;
+  width: 250px;
+  display: block;
+  font-size: 20px;
+  color: #555555;
+}
+
+.card-box {
+  width: 298px;
+  height: 384px;
+  background-color: #118811;
+  margin: 20px;
+  padding: 36px;
+  display: inline-block;
+}
+
+.selected {
+  background-color: yellow;
+}
+
+
+/* img [226 x 314] pad [36] box [298 x 384] */

@@ -1,0 +1,21 @@
+RUBRIC: 
+
+/MARK   CRITERIA
+/1      1. Create html/css/js files that look similar to above picture 
+/1      2. In your JS file create an empty array: let hand = []	 
+/1      3. Create a function called initialize() that uses the fetch command which gets JSON data from https://deckofcardsapi.com/ in order to get the deck_id number (this id will will then be used to later fetch new cards)	 
+/1      4. Inside the initialize function, listen for a click event on the "Deal button" and if clicked, fetch a new card using the appropriate API url and using the deck_id number that you just obtained	 
+/2      5. Create a render(hand) function that has a parameter 'hand' that represents the array of cards you want to show, and uses the .map and .join method on that array that was passed in in order to display the cards
+/2      6. If the user clicks on a card(s), that card(s) is selected/highlighted. This is done by adding a new boolean property to the card object called 'selected'.  (then call the render function).
+/1      7. If the user clicks "Show selected cards" button, then only display the selected/highlighted cards by using the filter method on objects that have the key/value of selected: true 
+            Then call the render method but pass in as the argument, the output of the above filter method.
+/1      8. If the user clicks "Show discarded cards" button, then only display the discarded/non-highlighted cards by using the filter method on objects that have the key/value of selected: false/undefined 
+            Then call the render method but pass in as the argument, the output of the above filter method.
+
+TOTAL	 /10
+
+Bonus +1: If the user refreshes, use of localStorage to retrieve the prior hand and display that instead
+Bonus +1: Display a running total of current hand according to Blackjack rules
+Bonus 1+: Create the dealer as an opponent (it can be as simple as a random total that can be compared against, but it's up to you)
+
+BONUS   /3+
