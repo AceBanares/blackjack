@@ -12,30 +12,33 @@ let hand = [];
 let handJSON = [];
 
 // key represents the deck of cards
-let key;
-let count = 0;
+let deckKey;
+let cardCount = 0;
+let cardValue = 0;
 
 // set variables to hold necessary elements
-const cardBtnDeal = document.querySelector("#btnDeal");
+const cardBoxCollect = document.querySelector("#boxCollect");
+const cardBtnGet = document.querySelector("#btnGet");
 const cardBtnSelect = document.querySelector("#btnSelect");
 const cardBtnDiscard = document.querySelector("#btnDiscard");
+const cardBoxPlay = document.querySelector("#boxPlay");
+const cardBtnDeal = document.querySelector("#btnDeal");
+const cardBtnHit = document.querySelector("#btnHit");
+const cardBtnStand = document.querySelector("#btnStand");
 const cardBoxOnHand = document.querySelector("#boxHand");
 const cardBtnReset = document.querySelector("#btnReset");
 const cardBtnCount = document.querySelector("#btnCount");
 const cardBtnBlackJack = document.querySelector("#btnBlackJack");
-const cardBtnDeal = document.querySelector("#btnDeal");
-const cardBtnHit = document.querySelector("#btnHit");
-const cardBtnStand = document.querySelector("#btnStand");
 
 // STEP 3: Create a function called initialize() that uses the fetch command which gets JSON data from  https://deckofcardsapi.com/  in order to get the deck_id number (this id will will then be used to later fetch new cards)
 function initialize() {
   fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
     .then(res => res.json())
     .then(data => {
-      key = data.deck_id;
+      deckKey = data.deck_id;
     });
   // STEP 4: Inside the initialize function, listen for a click event on the "Deal button" and if clicked, fetch a new card using the appropriate API url
-  cardBtnDeal.addEventListener("click", deal);
+  cardBtnGet.addEventListener("click", deal);
   cardBtnSelect.addEventListener("click", cardShowSelected);
   cardBtnDiscard.addEventListener("click", cardShowDiscarded);
   cardBoxOnHand.addEventListener("click", cardSelect);
@@ -44,12 +47,13 @@ function initialize() {
 }
 
 function deal() {
-  fetch(`https://deckofcardsapi.com/api/deck/${key}/draw/?count=1`)
+  fetch(`https://deckofcardsapi.com/api/deck/${deckKey}/draw/?count=1`)
     .then(res => res.json())
     .then(data => {
       if (data.success) {
         const id = 52 - data.remaining;
         const cardNew = { ...data.cards[0], id };
+        console.log(cardNew);
         cardDisplay(cardNew);
       } else {
         console.log(data.error);
@@ -83,7 +87,8 @@ function cardDisplay(cardNew) {
   // add parent to hand array
   hand.push(div);
   handJSON.push(cardNew);
-  cardBtnCount.textContent = `Cards on hand: ${++count}`;
+  cardBtnCount.textContent = `Cards on hand: ${++cardCount}`;
+  cardTotalValue(value);
 }
 
 // STEP 6: If the user clicks on a card(s), that card(s) is selected/highlighted.  This is done by adding a new boolean property to the card object called 'selected' ~~~(used classList to add property and css design at the same time)
@@ -141,7 +146,6 @@ function cardShowDiscarded() {
 
 // STEP 9: BONUS +1: If the user refreshes the page, use localStorage to get the prior hand and display that instead
 window.addEventListener("unload", () => {
-
   localStorage.setItem("cardsOnHand", JSON.stringify(handJSON));
 });
 
@@ -154,13 +158,36 @@ window.addEventListener("load", () => {
 function blackJackStart() {
   if (cardBtnBlackJack.textContent == "Play BlackJack") {
     cardBtnBlackJack.textContent = "Collect Cards";
+    blackJackToggle(true);
   } else {
     cardBtnBlackJack.textContent = "Play BlackJack";
+    blackJackToggle(false);
   }
 }
 
-function blackJackToggle() {
-  
+function blackJackToggle(disable) {
+  [...cardBoxCollect.getElementsByTagName("button")].forEach(
+    button => (button.disabled = disable)
+  );
+  [...cardBoxPlay.getElementsByTagName("button")].forEach(
+    button => (button.disabled = !disable)
+  );
+  cardBtnCount.textContent = disable
+    ? `Total card value: ${cardValue}`
+    : `Cards on hand: ${cardCount}`;
+}
+
+function cardTotalValue(value) {
+  switch (value) {
+    case "JACK":
+    case "QUEEN":
+    case "KING":
+      value = 10;
+      break;
+    case "ACE":
+      value = cardValue <= 11 ? 10 : 1;
+  }
+  cardValue += Number(value);
 }
 // STEP 11: BONUS 1+: Create a dealer/opponent who you can play against.  It can be as simple as generating a random number, or it can be more complex.
 
