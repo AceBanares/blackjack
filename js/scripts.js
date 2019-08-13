@@ -15,6 +15,7 @@ let handJSON = [];
 let deckKey;
 let cardCount = 0;
 let cardValue = 0;
+let cardAces = 0;
 
 // set variables to hold necessary elements
 const cardBoxCollect = document.querySelector("#boxCollect");
@@ -53,8 +54,8 @@ function deal() {
       if (data.success) {
         const id = 52 - data.remaining;
         const cardNew = { ...data.cards[0], id };
-        console.log(cardNew);
         cardDisplay(cardNew);
+        console.log(cardNew);
       } else {
         console.log(data.error);
       }
@@ -140,8 +141,6 @@ function cardShowDiscarded() {
   hand
     .filter(card => !card.classList.contains("selected"))
     .map(show => (show.style.display = "inline-block"));
-
-  console.log(hand);
 }
 
 // STEP 9: BONUS +1: If the user refreshes the page, use localStorage to get the prior hand and display that instead
@@ -151,7 +150,7 @@ window.addEventListener("unload", () => {
 
 window.addEventListener("load", () => {
   cardStorage = JSON.parse(localStorage.getItem("cardsOnHand"));
-  cardStorage.forEach(card => cardDisplay(card));
+  if(cardStorage) cardStorage.forEach(card => cardDisplay(card));
   // cardDisplay(cardStorage);
 });
 // STEP 10: BONUS +1: Display a running total according to Blackjack rules (figure out how to change value of an Ace from 11 to 1 if needed)
@@ -173,22 +172,34 @@ function blackJackToggle(disable) {
     button => (button.disabled = !disable)
   );
   cardBtnCount.textContent = disable
-    ? `Total card value: ${cardValue}`
+    ? `Card value: ${cardValue}`
     : `Cards on hand: ${cardCount}`;
 }
 
 function cardTotalValue(value) {
+  if (value == "ACE") cardAces++;
+
   switch (value) {
     case "JACK":
     case "QUEEN":
     case "KING":
-      value = 10;
-      break;
     case "ACE":
-      value = cardValue <= 11 ? 10 : 1;
+      value = 10;
   }
+
   cardValue += Number(value);
+  
+  while (cardAces > 0 && cardValue > 21) {
+    cardValue -= 9;
+    cardAces--;
+  }
 }
 // STEP 11: BONUS 1+: Create a dealer/opponent who you can play against.  It can be as simple as generating a random number, or it can be more complex.
 
+function debugDealAnAce () {
+  const aceOfDiamonds = {"code":"AD","value":"ACE","image":"https://deckofcardsapi.com/static/img/aceDiamonds.png","images":{"png":"https://deckofcardsapi.com/static/img/AD.png","svg":"https://deckofcardsapi.com/static/img/AD.svg"},"suit":"DIAMONDS","id":0}
+  cardDisplay(aceOfDiamonds);
+}
+
 initialize();
+blackJackStart();
