@@ -10,6 +10,8 @@
 // STEP 2: In your JS file create an empty array:  let hand = []
 let hand = [];
 let handJSON = [];
+let blackJackHand = [];
+let blackJackDealer = [];
 
 // key represents the deck of cards
 let deckKey;
@@ -150,7 +152,7 @@ window.addEventListener("unload", () => {
 
 window.addEventListener("load", () => {
   cardStorage = JSON.parse(localStorage.getItem("cardsOnHand"));
-  if(cardStorage) cardStorage.forEach(card => cardDisplay(card));
+  if (cardStorage) cardStorage.forEach(card => cardDisplay(card));
   // cardDisplay(cardStorage);
 });
 // STEP 10: BONUS +1: Display a running total according to Blackjack rules (figure out how to change value of an Ace from 11 to 1 if needed)
@@ -158,6 +160,7 @@ function blackJackStart() {
   if (cardBtnBlackJack.textContent == "Play BlackJack") {
     cardBtnBlackJack.textContent = "Collect Cards";
     blackJackToggle(true);
+    blackJackDeal();
   } else {
     cardBtnBlackJack.textContent = "Play BlackJack";
     blackJackToggle(false);
@@ -174,6 +177,9 @@ function blackJackToggle(disable) {
   cardBtnCount.textContent = disable
     ? `Card value: ${cardValue}`
     : `Cards on hand: ${cardCount}`;
+  [...cardBoxOnHand.getElementsByTagName("div")].forEach(
+    card => (card.style.display = disable ? "none" : "inline-block")
+  );
 }
 
 function cardTotalValue(value) {
@@ -188,7 +194,7 @@ function cardTotalValue(value) {
   }
 
   cardValue += Number(value);
-  
+
   while (cardAces > 0 && cardValue > 21) {
     cardValue -= 9;
     cardAces--;
@@ -196,9 +202,92 @@ function cardTotalValue(value) {
 }
 // STEP 11: BONUS 1+: Create a dealer/opponent who you can play against.  It can be as simple as generating a random number, or it can be more complex.
 
-function debugDealAnAce () {
-  const aceOfDiamonds = {"code":"AD","value":"ACE","image":"https://deckofcardsapi.com/static/img/aceDiamonds.png","images":{"png":"https://deckofcardsapi.com/static/img/AD.png","svg":"https://deckofcardsapi.com/static/img/AD.svg"},"suit":"DIAMONDS","id":0}
-  cardDisplay(aceOfDiamonds);
+function blackJackDeal() {
+  if (blackJackHand) blackJackHand.forEach(card => cardDisplay(card));
+}
+
+function debugCardDeal(value = "ACE", suit = "DIAMONDS") {
+  value = String(value).toUpperCase();
+  suit = String(suit).toUpperCase();
+
+  let code;
+
+  switch (value) {
+    case "1":
+    case "ACE":
+      value = "ACE";
+      break;
+    case "2":
+    case "3":
+    case "4":
+    case "5":
+    case "6":
+    case "7":
+    case "8":
+    case "9":
+    case "10":
+      break;
+    case "11":
+    case "JACK":
+      value = "JACK";
+      break;
+    case "12":
+    case "QUEEN":
+      value = "QUEEN";
+      break;
+    case "13":
+    case "KING":
+      value = "KING";
+      break;
+  }
+
+  code = value.slice(0, value.length == 2 ? 2 : 1);
+
+  switch (suit) {
+    case "C":
+    case "CLUB":
+    case "CLUBS":
+      suit = "CLUBS";
+      break;
+    case "S":
+    case "SPADE":
+    case "SPADES":
+      suit = "SPADES";
+      break;
+    case "H":
+    case "HEART":
+    case "HEARTS":
+      suit = "HEARTS";
+      break;
+    default:
+      suit = "DIAMONDS";
+  }
+
+  if (code == "10") code = "0";
+  code += suit.slice(0, 1);
+
+  const cardNew = {
+    code,
+    value,
+    image: `https://deckofcardsapi.com/static/img/${code}.png`,
+    images: {
+      png: `https://deckofcardsapi.com/static/img/${code}.png`,
+      svg: `https://deckofcardsapi.com/static/img/${code}.svg`
+    },
+    suit,
+    id: 0
+  };
+
+  cardDisplay(cardNew);
+}
+
+function debugCardsAll() {
+  for (let value = 1; value <= 13; value++) {
+    for (let suit = 1; suit <= 4; suit++) {
+      suitCode = { 1: "c", 2: "d", 3: "h", 4: "s" };
+      debugCardDeal(value, suitCode[suit]);
+    }
+  }
 }
 
 initialize();
